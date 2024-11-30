@@ -1,5 +1,4 @@
 @echo off
 TITLE Prospi Punto de Venta
-
-npm start
+start /min "" cmd /c npm start
 exit
