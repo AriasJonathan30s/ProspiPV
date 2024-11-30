@@ -10,8 +10,7 @@ export const environment = {
     },
     domain: {
         protocol: `http`,
-        host: 'localhost:3001'
-        // host: '192.168.1.82:3001'
+        host: '192.168.0.100:3001'
     }
 
 };
