@@ -10,11 +10,23 @@ import { MessageService } from 'primeng/api';
 import { NgxSpinnerModule } from "ngx-spinner";
 
 import { AppComponent } from './app.component';
+import { LoginComponent } from './components/login/login.component';
+import { MenuComponent } from './components/menu/menu.component';
+import { OrderInterfaceComponent } from './components/order-interface/order-interface.component';
+import { AvailabilityComponent } from './components/availability/availability.component';
+import { HomeComponent } from './components/home/home.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent,
+    MenuComponent,
+    OrderInterfaceComponent,
+    AvailabilityComponent,
+    HomeComponent,
+    NotFoundComponent
   ],
   imports: [
     CommonModule,
@@ -24,9 +36,9 @@ import { AppComponent } from './app.component';
     FormsModule,
     HttpClientModule,
     ToastModule,
-    NgxSpinnerModule,
+    NgxSpinnerModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

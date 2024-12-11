@@ -1,0 +1,90 @@
+
+<div class="row terthiary-color paddiner text-center">
+    <h1>ADMINISTRADOR DE ORDENES</h1>
+</div>
+<div class="row paddiner">
+    <div class="col">
+        <button class="btn btn-outline-warning" (click)="modalType(0)" data-bs-toggle="modal" data-bs-target="#actionModal">Nueva orden</button>
+    </div>
+    <div class="col"></div>
+    <div class="col"></div>
+</div>
+<div class="row paddiner"></div>
+
+<!-- MODAL -->
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">{{ selectedModal }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div *ngIf="modalTypes[type] == modalTypes[0]" class="modal-body">
+            <form>
+                <div class="input-group mb-3 marginer">
+                    <span class="input-group-text">Comida</span>
+                    <select class="form-select" id="inputRole" name="role" [(ngModel)]="order" [ngModelOptions]="{standalone:true}">
+                        <option *ngFor="let food of foods" value="{{ food }}">{{ food }}</option>
+                    </select>
+                    <!-- <button class="btn btn-outline-success" type="button">Agrega</button> -->
+                </div>
+                <hr />
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="verduras" value="0" (click)="isAddEnabled('verduras')">
+                        <label class="form-check-label" for="verduras">{{ foodAdds[0] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="aderezos" value="1" (click)="isAddEnabled('aderezos')">
+                        <label class="form-check-label" for="aderezos">{{ foodAdds[1] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="quesos" value="2" (click)="isAddEnabled('quesos')">
+                        <label class="form-check-label" for="quesos">{{ foodAdds[2] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="salsas" value="3" (click)="isAddEnabled('salsas')">
+                        <label class="form-check-label" for="salsas">{{ foodAdds[3] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="otros" value="4" (click)="isAddEnabled('otros')">
+                        <label class="form-check-label" for="otros">{{ foodAdds[4] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="todo" value="5" (click)="isAddDisabled(selectAllAdds)">
+                        <label class="form-check-label" for="todo">Todo</label>
+                    </div>
+                </div>
+                <hr />
+                <div *ngIf="addsInclude.verduras">
+                    <h4>{{ foodAdds[0] }}</h4>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="lechuga" value="0" (click)="isVerdEnabled('lechuga')">
+                        <label class="form-check-label" for="lechuga">{{ verduras[0] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="jitomate" value="1" (click)="isVerdEnabled('jitomate')">
+                        <label class="form-check-label" for="jitomate">{{ verduras[1] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="cebolla" value="2" (click)="isVerdEnabled('cebolla')">
+                        <label class="form-check-label" for="cebolla">{{ verduras[2] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="picante" value="3" (click)="isVerdEnabled('picante')">
+                        <label class="form-check-label" for="picante">{{ verduras[3] }}</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="todos" value="4" (click)="isVerdDisabled(selectAllVerds)">
+                        <label class="form-check-label" for="todos">Con todo</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" (click)="submit()">Confirma</button>
+        </div>
+      </div>
+    </div>
+  </div>

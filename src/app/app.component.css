@@ -1,0 +1,23 @@
+.paddiner {
+    padding: 5px;
+}
+
+.marginer {
+    margin: 5px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.primary-color {
+    background-color: rgb(255, 206, 85);
+}
+
+.secondary-color {
+    color: rgb(212, 27, 0);
+}
+
+.terthiary-color {
+    color: white;
+}
