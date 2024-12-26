@@ -1,1 +1,14 @@
-<p>menu works!</p>
+<div class="row">
+    <h1 class="primary-color text-center">Menú</h1>
+</div>
+<div *ngFor="let group of menuGroups" class="row">
+    <div *ngFor="let product of group" class="col">
+        <div class="card pointer primary-color marginer" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title secondary-color">{{ product.name}}</h5>
+              <p>Presentación: </p>
+              <span *ngFor="let type of product.types" class="card-text"><b> ~{{ type }}</b></span>
+            </div>
+        </div>
+    </div>
+</div>
