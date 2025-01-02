@@ -91,7 +91,7 @@ export class AppComponent {
           this.launchMessage('success', 'Login', body.message);
         },
         e=>{
-          console.log(e);
+          this.launchMessage('error', 'Error', e.error.message);
           this.spinner.hide();
         }
       )

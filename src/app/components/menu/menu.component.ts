@@ -20,17 +20,21 @@ export class MenuComponent {
   ){}
 
   ngOnInit(){
-    this.getProducts();
+    this.getMenu();
   }
 
-  getProducts(){
-    this.orders.getProducts(this.admins.getSessionAdmin())
+  dirWParams(ruta:string, id:string, type:string){
+    this.orders.dirWParams(ruta, id, type);
+  }
+
+  getMenu(){
+    this.orders.getMenu(this.admins.getSessionAdmin())
     .subscribe(
       resp=>{
-        const gotMenu:any[] = resp.body.message
+        const gotMenu:any[] = resp.body.message;
         if (gotMenu.length <= 3) {
           const group:any[] = []
-          gotMenu.map((prod)=>{
+          gotMenu.map((prod,index)=>{
             group.push(prod);
           })
           this.menuGroups.push(group);
@@ -49,7 +53,6 @@ export class MenuComponent {
           }
           this.menuGroups.push(group);
         }
-        console.log(this.menuGroups)
       },
       e=>{
         console.log(e);
