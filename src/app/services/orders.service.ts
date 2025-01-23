@@ -15,8 +15,12 @@ export class OrdersService {
     private http: HttpClient
   ) { }
 
-  dirWParams(ruta:string, id:any, type:any){
-    this.router.navigate([ruta, id, type])
+  dirWParams(ruta:string, order:any){
+    this.router.navigate([ruta, order])
+  }
+
+  addToOrder(access:any, order:any, prods:any){
+    return this.http.get<any>(`${ environment.domain.protocol }://${ environment.domain.host }/produccion/add-to-order`, { 'headers':{ 'ContentType':'application/json', 'access':access , 'order':order, 'prods': JSON.stringify(prods) }, observe:'response' });
   }
 
   getOrders(access:any, showActive:any, opts:any){

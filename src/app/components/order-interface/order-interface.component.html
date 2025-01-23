@@ -1,32 +1,31 @@
 
 <div class="row terthiary-color paddiner text-center">
-    <h1>ADMINISTRADOR DE ORDENES</h1>
+    <h1>ADMINISTRADOR DE PEDIDOS</h1>
 </div>
 <div class="row paddiner">
     <div class="col">
-        <button class="btn btn-outline-light" (click)="direcciona('menu')">Regresa al menú</button>
+        <button class="btn btn-outline-warning" id="hasParams" (click)="modalType(0)" data-bs-toggle="modal" data-bs-target="#actionModal">Nuevo pedido</button>
     </div>
-    <div class="col">
-        <button class="btn btn-outline-warning" id="hasParams" (click)="modalType(0)" data-bs-toggle="modal" data-bs-target="#actionModal" disabled>Nueva orden</button>
-    </div>
+    <div class="col"></div>
     <div class="col"></div>
     <div class="col"></div>
 </div>
 <div *ngFor="let group of getOrdersGrps" class="row">
     <div *ngFor="let order of group" class="col">
-        <div class="card primary-color marginer" style="width: 18rem;">
+        <div class="card primary-color marginer" style="width: 18rem;" >
             <div class="card-body">
               <h5 class="card-title secondary-color">{{ order.cxName}}</h5>
               <p>Productos pedidos: <b>{{ order.prodQuant }}</b></p>
+              <p class="card-text">Registrado: <b>{{ order.requesDateHour }}</b></p>
               <div class="row">
                 <div class="col">
-                    <button class="btn btn-outline-success">Agrega alimento</button>
+                    <button class="btn btn-outline-success" (click)="dirWParams('menu', order.id)">Agrega a orden</button>
                 </div>
                 <div class="col">
-                    <button class="btn btn-outline-dark">Realiza pago</button>
+                    <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#actionModal" (click)="modalType(1, order.id)">Ver cuenta</button>
                 </div>
               </div>
-              <p class="card-text">Registrado: <b>{{ order.requesDateHour }}</b></p>
+              
             </div>
         </div>
     </div>
@@ -41,43 +40,13 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div *ngIf="modalTypes[type] == modalTypes[0]" class="modal-body">
-            <form>
-                <input class="form-control marginer" type="text" placeholder="Ingrese nombre del cliente" name="cxName" [(ngModel)]="newOrder.cxName" autocomplete="on">
-                <input *ngIf="getProduct" class="form-control marginer" type="text" type="text" name="prodName" [(ngModel)]="getProduct.name" disabled>
-                <input *ngIf="getProduct" class="form-control marginer" type="text" type="text" name="prodType" [(ngModel)]="getProduct.type" disabled>
-                <div *ngIf="getProduct" class="input-group mb-3 marginer">
-                    <input class="form-control" type="text" type="number" value="" name="prodQuant" id="prodQuant" placeholder="Cantidad (default 1)">
-                    <button class="btn btn-outline-success" (click)="chngQuant()">Agrega</button>
-                </div>
-                
-                <hr />
-                    <p><b>Condimentos actuales</b></p>
-                    <p *ngIf="getProduct">{{ getProduct.detail }}</p>
-                    <button class="btn btn-outline-success" id="isrmvDisabled" (click)="disableRmv()"><i class="bi bi-check-circle"></i> Con todo</button>
-                <div *ngIf="getProduct && rmvDisabled">
-                    <hr />
-                    <p><b>Quita ingrediente</b></p>
-                    <div *ngFor="let ingr of getProduct.dtlArr; index as i" class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" [id]="ingr" value="0" (click)="isRmvIngr(i, ingr)">
-                        <label class="form-check-label">{{ ingr }}</label>
-                    </div>
-                </div>
-                <div *ngIf="getIngredients">
-                    <hr />
-                    <p><b>Agrega otro ingrediente</b></p>
-                    <div *ngFor="let ingr of getIngredients;">
-                        <h5>{{ ingr.type }}</h5>
-                        <div *ngFor="let cond of ingr.conds; index as i" class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="isOtherIngr(i, cond)">
-                            <label class="form-check-label">{{ cond }}</label>
-                        </div>
-                    </div>
-                </div>
-            </form>
+          <form>
+            <input class="form-control marginer" type="text" placeholder="Ingrese nombre del cliente" name="cxName" [(ngModel)]="newOrder.cxName" autocomplete="on">
+          </form>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="build()" data-bs-toggle="modal" data-bs-target="#reviewModal">Revisa</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clear(type)">Close</button>
+          <button type="button" class="btn btn-primary" id="builder" (click)="build()" data-bs-toggle="modal" data-bs-target="#reviewModal">Revisa</button>
         </div>
       </div>
     </div>
@@ -92,34 +61,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div *ngIf="modalTypes[type] == modalTypes[0]" class="modal-body">
-            <div class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">Cliente</span>
-                <span class="input-group-text" for="productName"><b>{{ newOrder.cxName }}</b></span>
-            </div>
-            <div *ngIf="getProduct" class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">Alimento</span>
-                <span class="input-group-text" for="productName"><b>{{ getProduct.name }}</b></span>
-            </div>
-            <div *ngIf="product.type" class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">Presentación</span>
-                <span class="input-group-text" for="productName"><b>{{ product.type }}</b></span>
-            </div>
-            <div *ngIf="product.quant" class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">Cantidad</span>
-                <span class="input-group-text" for="productName"><b>{{ product.quant }}</b></span>
-            </div>
-            <div *ngIf="product.conTodo === 'Si'" class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">Con todo</span>
-                <span class="input-group-text" for="productName"><b>{{ product.conTodo }}</b></span>
-            </div>
-            <div *ngIf="product.conTodo === 'No'" class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">No lleva</span>
-                <span class="input-group-text" for="productName"><b>{{ product.noLleva }}</b></span>
-            </div>
-            <div *ngIf="(product.addlIngr)" class="input-group mb-3 marginer">
-                <span class="input-group-text" for="productName">Otro ingrediente</span>
-                <span class="input-group-text" for="productName"><b>{{ product.addlIngr }}</b></span>
-            </div>
+            
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>

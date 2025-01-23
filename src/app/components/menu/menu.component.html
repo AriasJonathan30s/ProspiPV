@@ -1,15 +1,202 @@
 <div class="row">
     <h1 class="primary-color text-center">Menú</h1>
 </div>
-<div *ngFor="let group of menuGroups" class="row">
-    <div *ngFor="let product of group" class="col">
-        <div class="card pointer primary-color marginer" style="width: 18rem;" (click)="dirWParams('ordenes', product.id, product.type)">
-            <div class="card-body">
-              <h5 class="card-title secondary-color">{{ product.name}}</h5>
-              <p>Presentación: <b>{{ product.type }}</b></p>
-              <p>Contiene: <b>{{ product.detail }}</b></p>
-              <span *ngFor="let type of product.types" class="card-text"><b> ~{{ type }}</b></span>
+<div class="row">
+    <div class="col-8">
+        <div *ngFor="let group of menuGroups" class="row">
+            <div *ngFor="let product of group" class="col">
+                <div class="card pointer primary-color marginer" style="width: 18rem;" (click)="selectModal(0, product)"  data-bs-toggle="modal" data-bs-target="#actionModal">
+                    <div class="card-body">
+                      <h5 class="card-title secondary-color">{{ product.name}}</h5>
+                      <p>Presentación: <b>{{ product.type }}</b></p>
+                      <p>Contiene: <b>{{ product.detail }}</b></p>
+                      <p>Precio: <b>{{ product.price }}</b></p>
+                      <span *ngFor="let type of product.types" class="card-text"><b> ~{{ type }}</b></span>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Agregado a la orden</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Presentacion</th>
+                            <th scope="col">Cant</th>
+                            <th scope="col">Acción</th>
+                        </thead>
+                        <tbody *ngFor="let ordered of orderProds; index as i">
+                            <th scope="row">{{ ordered.name }}</th>
+                            <td>{{ ordered.type}}</td>
+                            <td>{{ ordered.quant }}</td>
+                            <td>
+                                <button class="btn btn-warning" (click)="selectModal(1,ordered,i)" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="bi bi-arrow-repeat"></i></button>
+                                <button class="btn btn-danger" (click)="rmvOrderedProd(i)"><i class="bi bi-dash-circle"></i></button>
+                            </td>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-success marginer" [disabled]="!orderProds.length" data-bs-toggle="modal" data-bs-target="#reviewModal" (click)="selectModal(2)"><i class="bi bi-check-circle"> Revisa</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">{{ selectedMod }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div *ngIf="selectedMod == modalOpts[0]" class="modal-body">
+            <form>
+                <input class="form-control marginer" type="text" placeholder="Nombre del producto" name="prodName" [(ngModel)]="prodPref.name" autocomplete="on" disabled>
+                <input class="form-control marginer" type="text" placeholder="Presentacion del producto" name="prodPresn" [(ngModel)]="prodPref.type" disabled>
+                <div class="input-group mb-3 marginer">
+                    <input class="form-control" type="number" id="quant" placeholder="Ingresa cantidad (default 1)" name="prodName" autocomplete="off">
+                    <button class="btn btn-outline-success" (click)="chngQuant()">Agrega</button>
+                </div>
+                <div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRatioDefault" id="flexRadioDefault1" (click)="InclAll('Si')" checked>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Con todo
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRatioDefault" id="flexRadioDefault2" (click)="InclAll('No')">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Elimina ingredientes
+                        </label>
+                        <hr />
+                        <div *ngFor="let cond of prodPref.detailArr" class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="delCond(cond)">
+                            <label class="form-check-label" for="cond">{{ cond }}</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div *ngIf="selectedMod == modalOpts[1]" class="modal-body">
+            <form>
+                <div class="input-group mb-3 marginer">
+                    <span class="input-group-text">Producto</span>
+                    <input class="form-control" type="text" name="prodName" [value]="prodSel.name" disabled>
+                </div>
+                <div class="input-group mb-3 marginer">
+                    <span class="input-group-text">Presentacion</span>
+                    <input class="form-control" type="text" name="prodPresn" [value]="prodSel.type" disabled>
+                </div>
+                <div class="input-group mb-3 marginer">
+                    <span class="input-group-text">Cantidad: {{ prodSel.quant }}</span>
+                    <input class="form-control" type="number" id="quant" placeholder="Ingresa cantidad (default 1)" name="prodName" autocomplete="on">
+                    <button class="btn btn-outline-success" (click)="editMenuProd('quant')">Agrega</button>
+                </div>
+                <div>
+                    <span *ngIf="prodSel.inclAll === 'Si'">Ingredientes: <b>Con todo</b></span>
+                    <span *ngIf="prodSel.rmvCond">Ingredientes: Sin <b>{{ prodSel.rmvCond }}</b></span>
+                </div>
+                <div>
+                    <hr />
+                    <h5>Edita</h5>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRatioDefault" id="flexRadioDefaultUno" (click)="editInclAll('Si')" checked>
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Con todo
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRatioDefault" id="flexRadioDefaultDos" (click)="editInclAll('No')">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Elimina ingredientes
+                        </label>
+                        <hr />
+                        <div *ngFor="let cond of prodIngrs" class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="editDelCond(cond)">
+                            <label class="form-check-label" for="cond">{{ cond }}</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal" (click)="build(modalSel)">Revisa</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Revisa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div *ngIf="selectedMod == modalOpts[0]" class="modal-body">
+            <h5>{{ orderProd.name }}</h5>
+            <p>Presentación: <b>{{ orderProd.type }}</b></p>
+            <p>Cantidad: <b>{{ orderProd.quant }}</b></p>
+            <p>Con todo?: <b>{{ orderProd.inclAll }}</b></p>
+            <p *ngIf="orderProd.inclAll === 'No' && orderProd.rmvCond">Sin <b>{{ orderProd.rmvCond }}</b></p>
+        </div>
+        <div *ngIf="selectedMod == modalOpts[1]" class="modal-body">
+            <h5>Original</h5>
+            <p>Nombre: <b>{{ prodSel.name}}</b></p>
+            <p>Presentacion:<b>{{ prodSel.type}}</b></p>
+            <p>Cantidad: <b>{{ prodSel.quant}}</b></p>
+            <p>Incluye todo: <b>{{ prodSel.inclAll}}</b></p>
+            <p *ngIf="prodSel.inclAll === 'No'">Sin: <b>{{ prodSel.rmvCond}}</b>.</p>
+            <hr />
+            <h5>Modificado</h5>
+            <p>Nombre: <b>{{ prodEdit.name}}</b></p>
+            <p>Presentacion:<b>{{ prodEdit.type}}</b></p>
+            <p>Cantidad: <b>{{ prodEdit.quant}}</b></p>
+            <p>Incluye todo: <b>{{ prodEdit.inclAll}}</b></p>
+            <p *ngIf="prodEdit.inclAll === 'No'">Sin: <b>{{ prodEdit.rmvCond}}</b>.</p>
+        </div>
+        <div *ngIf="selectedMod == modalOpts[2]" class="modal-body">
+            <div *ngFor="let order of orderProds; index as i" class="card marginer" style="width: 18rem;">
+                <div class="card-header">
+                    Producto {{ i+1 }}
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        Nombre: <b>{{ order.name }}</b>
+                    </li>
+                    <li class="list-group-item">
+                        Presentacion <b>{{ order.type }}</b>
+                    </li>
+                    <li class="list-group-item">
+                        Cantidad: <b>{{ order.quant }}</b>
+                    </li>
+                    <li class="list-group-item">
+                        Con todo? <b>{{ order.inclAll }}</b>
+                    </li>
+                    <li class="list-group-item" *ngIf="order.rmvCond">
+                        Sin: <b>{{ order.rmvCond }}</b>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>
+          <button type="button" class="btn btn-primary" (click)="submit()" data-bs-dismiss="modal">Confirma</button>
+        </div>
+      </div>
     </div>
 </div>

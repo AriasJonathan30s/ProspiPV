@@ -12,16 +12,13 @@ import { AdminService } from '../../services/admin.service';
   styleUrl: '../../app.component.css'
 })
 export class OrderInterfaceComponent {
-  modalTypes:any[] = ['Nueva Orden','Agrega a Orden','Modifica Orden','Realiza pago'];
+  modalTypes:any[] = ['Nuevo pedido','Ver cuenta'];
   type:any;
   selectedModal:String = '';
   getIngredients:any;
-  newOrder:any = { cxName: '', products: [], status: 1 };
-  rmvIngr:any[] = [];
-  otherIngr:any[] = [];
-  getProduct:any;
-  product:any;
-  editORder:any;
+  newOrder:any = { cxName: '', status: 1 };
+  orderSel:any;
+  orderEd:any = {};
   getOrdersGrps:any;
   rmvDisabled:number = 1;
 
@@ -34,7 +31,6 @@ export class OrderInterfaceComponent {
   ){}
   
   ngOnInit(){
-    this.getParams();
     this.loadOrders();
   }
 
@@ -46,13 +42,14 @@ export class OrderInterfaceComponent {
         const orders:any[] = resp.body.message;
         let ordGrp:any[] = [];
         if (orders.length <= 3) {
-          this.getOrdersGrps = orders;
+          this.getOrdersGrps[0] = orders;
         } else {
           let iLimit = 3;
           orders.map((order, index)=>{
             if (index < iLimit) {
               ordGrp.push(order)
             } else {
+           
               this.getOrdersGrps.push(ordGrp)
               iLimit = iLimit + 3;
               ordGrp = [];
@@ -63,7 +60,6 @@ export class OrderInterfaceComponent {
             }
           })
         }
-        console.log(this.getOrdersGrps)
       },
       e=>{
         this.launchMessage('error', 'Error', e.error.message)
@@ -71,19 +67,22 @@ export class OrderInterfaceComponent {
     )
   }
 
-  submit(){
-    if (this.newOrder.cxName && ((this.product.conTodo === 'No' && this.product.noLleva.length != 0) || (this.product.conTodo === 'Si' && !this.product.noLleva))) {
-      this.spinner.show();
-      this.setOrder();
+  dirWParams(ruta:string, id:string){
+    this.orders.dirWParams(ruta, id);
+  }
+
+  submit(){}
+
+  createOrder(){
+    if (this.newOrder.cxName && this.newOrder.status === 1) {
       this.orders.setNewOrder(this.admins.getSessionAdmin(), this.newOrder)
       .subscribe(
         resp=>{
-          this.spinner.hide();
-          location.reload()
           this.launchMessage('success','Exito', resp.body.message)
+          console.log(resp.body.id)
+          this.dirWParams('menu', resp.body.id)
         },
         e=>{
-          this.spinner.hide();
           this.launchMessage('error','Error', e.error.message)
         }
       )
@@ -92,135 +91,51 @@ export class OrderInterfaceComponent {
     }
   }
 
-  isOtherIngr(index:number, ingrd:string){
-    if (this.otherIngr.includes(ingrd)) {
-      const condIndex = this.otherIngr.indexOf(ingrd);
-      this.otherIngr.splice(condIndex, 1);
-    } else {
-      this.otherIngr.push(ingrd);
-    }
-  }
+  clear(option:number){
+    switch(option){
+      case 0:
 
-  disableRmv(){
-    if (this.rmvDisabled === 0) {
-      this.rmvDisabled = 1;
-      this.chngElmnState('isrmvDisabled', 'btn btn-outline-success', `<i class="bi bi-check-circle"></i>`, 'Con todo');
-      this.rmvIngr = [];
-    } else {
-      this.rmvDisabled = 0;
-      this.chngElmnState('isrmvDisabled', 'btn btn-outline-danger', `<i class="bi bi-dash-circle"></i>`, 'Quita alguno');
+        break;
+      default:
+        break;
     }
-  }
-
-  isRmvIngr(index:number, ingrd:string){
-    if (this.rmvIngr.includes(ingrd)) {
-      const condIndex = this.rmvIngr.indexOf(ingrd);
-      this.rmvIngr.splice(condIndex, 1);
-    } else {
-      this.rmvIngr.push(ingrd);
-    }
-  }
-
-  chngQuant(){
-    const qntyElmnt = (document.getElementById('prodQuant') as HTMLInputElement).value;
-    if (qntyElmnt > this.product.quant) {
-      this.product.quant = qntyElmnt;
-      console.log(this.product)
-    } else {
-      this.launchMessage('warn','Atencion','Dejarlo en default 1, o elija 2 o mas')
-    }
-  }
-
-  loadProductnIngrs(){
-    this.spinner.show();
-    this.orders.getProdNIngrs(this.admins.getSessionAdmin(), this.product)
-    .subscribe(
-      resp=>{
-        this.getProduct = resp.body.message.prod;
-        this.getIngredients = resp.body.message.cond;
-        this.spinner.hide();
-      },
-      e=>{
-        console.warn(e)
-        this.launchMessage('error','Error',e.error.message);
-        this.spinner.hide();
-      }
-    )
-  }
-
-  orderProd(){
-    if (this.rmvDisabled === 0) {
-      this.product.conTodo = 'Si';
-      delete this.product.noLleva;
-    } else {
-      this.product.conTodo = 'No';
-      this.product.noLleva = this.rmvIngr;
-    }
-    if (this.otherIngr.length != 0) {
-      this.product.addlIngr = this.otherIngr;
-    } else {
-      delete this.product.addlIngr;
-    }
-  }
-
-  setOrder(){
-    this.newOrder.products.push(this.product);
   }
 
   build(){
     switch (this.type) {
       case 0:
-        this.orderProd();
+        this.createOrder();
         break;
       case 1:
-        
         break;
       case 2:
-        
         break;
       case 3:
-        
         break;
     }
   }
 
-  modalType(type:number){
+  getOrder(id:string){
+    this.orders.getOrder(this.admins.getSessionAdmin() ,id)
+    // this.admins.getSessionAdmin() ,
+  }
+
+  modalType(type:number, orderId?:any){
     this.type = type;
     this.selectedModal = this.modalTypes[type];
     switch (type) {
       case 0:
-        this.loadProductnIngrs();
+        const attrs = ['data-bs-toggle', 'data-bs-target',"data-bs-dismiss","modal"];
+        attrs.forEach(attr=> document.getElementById('builder')?.removeAttribute(attr));
+        document.getElementById('builder')?.setAttribute(attrs[2], attrs[3])
         break;
       case 1:
-        
+        // this.orderSel = orderId;
+        this.getOrder(orderId);
         break;
-      case 2:
-        
-        break;
-      case 3:
-        
-        break;
+        default:
+        break
     }
-  }
-
-  getParams(){
-    this.route.params
-    .subscribe((params:Params)=>{
-      if (params['id'] && params['type']) {
-        this.product = { id: params['id'], type: params['type'], quant: 1 };
-        document.getElementById('hasParams')?.removeAttribute('disabled');
-      }
-    })
-  }
-
-  chngElmnState(id:string, clase:string, icon:string, value:string){
-    (document.getElementById(id) as HTMLElement).innerHTML = `${icon} ${value}`;
-    document.getElementById(id)?.removeAttribute('class');
-    document.getElementById(id)?.setAttribute('class', clase);
-  }
-
-  direcciona(ruta:string){
-    this.admins.direcciona(ruta);
   }
 
   launchMessage(severity:string,summary:string,detail:string){
