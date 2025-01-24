@@ -13,12 +13,15 @@ import { AdminService } from '../../services/admin.service';
 })
 export class OrderInterfaceComponent {
   modalTypes:any[] = ['Nuevo pedido','Ver cuenta'];
+  payMethods:any[] = ['','Efectivo','Transferencia','Tarjeta de credito', 'Tarjeta de debito'];
   type:any;
   selectedModal:String = '';
   getIngredients:any;
   newOrder:any = { cxName: '', status: 1 };
   orderSel:any;
   orderEd:any = {};
+  viewOrderAccnt: any;
+  payVals:any = { pay:0, payMethod:'', change:0 };
   getOrdersGrps:any;
   rmvDisabled:number = 1;
 
@@ -49,7 +52,6 @@ export class OrderInterfaceComponent {
             if (index < iLimit) {
               ordGrp.push(order)
             } else {
-           
               this.getOrdersGrps.push(ordGrp)
               iLimit = iLimit + 3;
               ordGrp = [];
@@ -71,7 +73,23 @@ export class OrderInterfaceComponent {
     this.orders.dirWParams(ruta, id);
   }
 
-  submit(){}
+  submit(){
+    if (this.payVals.pay && this.payVals.payMethod && parseFloat(this.payVals.pay) >= this.viewOrderAccnt.price) {
+      this.orders.closeOrder(this.admins.getSessionAdmin(), this.viewOrderAccnt, this.payVals)
+      .subscribe(
+        resp=>{
+          this.launchMessage('success','Gracias',resp.body.message);
+          document.getElementById('closeModal')?.click();
+          location.reload();
+        },
+        e=>{
+          this.launchMessage('error','Error',e.error.message)
+        }
+      )
+    } else {
+      this.launchMessage('warn','Atención','El pago es menor que la cantidad a pagar');
+    }
+  }
 
   createOrder(){
     if (this.newOrder.cxName && this.newOrder.status === 1) {
@@ -79,7 +97,6 @@ export class OrderInterfaceComponent {
       .subscribe(
         resp=>{
           this.launchMessage('success','Exito', resp.body.message)
-          console.log(resp.body.id)
           this.dirWParams('menu', resp.body.id)
         },
         e=>{
@@ -92,9 +109,15 @@ export class OrderInterfaceComponent {
   }
 
   clear(option:number){
+    console.log(option)
     switch(option){
       case 0:
-
+        this.newOrder = { cxName: '', status: 1 };
+        break;
+      case 1:
+        this.payVals = { pay:0, payMethod:'', change:0 };
+        (document.getElementById('payVal') as HTMLInputElement).value ='';
+        (document.getElementById('payMethod') as HTMLInputElement).value ='';
         break;
       default:
         break;
@@ -107,6 +130,14 @@ export class OrderInterfaceComponent {
         this.createOrder();
         break;
       case 1:
+        if (!this.payVals.pay && !this.payVals.payMethod) {
+          this.launchMessage('warn','Atención','Campos no llenados o seleccionados');
+        }
+        if (parseFloat(this.payVals.pay) < this.viewOrderAccnt.price) {
+          this.launchMessage('warn','Atención','El pago es menor que la cantidad a pagar');
+        } else {
+          this.payVals.change = parseFloat(this.payVals.pay) - this.viewOrderAccnt.price;
+        }
         break;
       case 2:
         break;
@@ -115,9 +146,25 @@ export class OrderInterfaceComponent {
     }
   }
 
+  selectPayMethod(event:any){
+    this.payVals.payMethod = event;
+  }
+
+  regPayment(){
+    const val = (document.getElementById('payVal') as HTMLInputElement).value;
+    this.payVals.pay = val;
+  }
+
   getOrder(id:string){
     this.orders.getOrder(this.admins.getSessionAdmin() ,id)
-    // this.admins.getSessionAdmin() ,
+    .subscribe(
+      resp=>{
+        this.viewOrderAccnt = resp.body.message;
+      },
+      e=>{
+        console.error(e)
+      }
+    )
   }
 
   modalType(type:number, orderId?:any){
@@ -130,7 +177,6 @@ export class OrderInterfaceComponent {
         document.getElementById('builder')?.setAttribute(attrs[2], attrs[3])
         break;
       case 1:
-        // this.orderSel = orderId;
         this.getOrder(orderId);
         break;
         default:

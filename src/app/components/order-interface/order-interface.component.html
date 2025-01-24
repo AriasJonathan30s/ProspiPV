@@ -44,6 +44,27 @@
             <input class="form-control marginer" type="text" placeholder="Ingrese nombre del cliente" name="cxName" [(ngModel)]="newOrder.cxName" autocomplete="on">
           </form>
         </div>
+        <div *ngIf="modalTypes[type] == modalTypes[1]" class="modal-body">
+          <div *ngIf="viewOrderAccnt">
+            <p>Nombre: <b>{{ viewOrderAccnt.cxName }}</b></p>
+            <ul>
+              <li *ngFor="let prod of viewOrderAccnt.products" class="paddiner">
+                <span>Producto: <b>  {{ prod.name }} </b> </span> <span> <b>  {{ prod.type }}</b></span>
+                <p>Cantidad: <b>{{ prod.quant }}</b></p>
+                <span>Precio unitario: <b>${{ prod.unitPrice }} </b> </span> <span> Precio total: <b class="secondary-color">${{ prod.totPrice }}</b></span>
+              </li>
+            </ul>
+            <p>Total a pagar: <b class="secondary-color">${{ viewOrderAccnt.price }}</b></p>
+            <div class="input-group mb-3 marginer">
+              <span class="input-group-text">Cantidad a pagar</span>
+              <input class="form-control" type="number" id="payVal" name="payVal">
+              <button class="btn btn-outline-success" (click)="regPayment()">Agrega</button>
+          </div>
+          <select class="form-select" aria-label="Default select" ngModel (ngModelChange)="selectPayMethod($event)" id="payMethod">
+            <option *ngFor="let method of payMethods" [value]="method">{{ method }}</option>
+          </select>
+          </div>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clear(type)">Close</button>
           <button type="button" class="btn btn-primary" id="builder" (click)="build()" data-bs-toggle="modal" data-bs-target="#reviewModal">Revisa</button>
@@ -58,10 +79,13 @@
       <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">{{ selectedModal }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" id="closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div *ngIf="modalTypes[type] == modalTypes[0]" class="modal-body">
-            
+        <div *ngIf="modalTypes[type] == modalTypes[1] && viewOrderAccnt && payVals" class="modal-body">
+            <p>Total a pagar: <b>${{ viewOrderAccnt.price }}</b></p>
+            <p>Metodo de pago: <b>{{ payVals.payMethod }}</b></p>
+            <p>Paga: <b>${{ payVals.pay }}</b></p>
+            <p>Cambio: <b>${{ payVals.change }}</b></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>

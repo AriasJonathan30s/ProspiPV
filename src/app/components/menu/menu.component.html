@@ -44,7 +44,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <button class="btn btn-success marginer" [disabled]="!orderProds.length" data-bs-toggle="modal" data-bs-target="#reviewModal" (click)="selectModal(2)"><i class="bi bi-check-circle"> Revisa</i></button>
+                        <button class="btn btn-success marginer"  data-bs-toggle="modal" data-bs-target="#reviewModal" (click)="selectModal(2)" [disabled]="!orderProds.length || disable"><i class="bi bi-check-circle"> Revisa</i></button>
                     </div>
                 </div>
             </div>
@@ -145,7 +145,7 @@
       <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Revisa</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div *ngIf="selectedMod == modalOpts[0]" class="modal-body">
             <h5>{{ orderProd.name }}</h5>
@@ -194,7 +194,7 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>
+          <button type="button" class="btn btn-secondary" id="returnBtn" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>
           <button type="button" class="btn btn-primary" (click)="submit()" data-bs-dismiss="modal">Confirma</button>
         </div>
       </div>

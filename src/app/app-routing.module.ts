@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'inventario', component: AvailabilityComponent/*, canActivate: [authenticateGuard, authorizeGuard] */ },
   { path: 'ordenes', component:OrderInterfaceComponent /*, canActivate: [authenticateGuard] */},
   { path: 'menu/:order', component:MenuComponent /*, canActivate: [authenticateGuard] */},
-  // { path: 'menu', component:MenuComponent/*, canActivate: [authenticateGuard, authorizeGuard]*/ },
+  { path: 'menu', component:MenuComponent/*, canActivate: [authenticateGuard, authorizeGuard]*/ },
   { path: 'login', component:LoginComponent /*, canActivate: [authenticateGuard]*/ },
   { path: '', component: HomeComponent },
   { path: '**', component: NotFoundComponent }

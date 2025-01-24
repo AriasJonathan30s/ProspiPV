@@ -25,6 +25,7 @@ export class MenuComponent {
   prodSel:any;
   prodIngrs:any[] = [];
   prodEdit:any = { quant: 1};
+  disable:boolean = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,10 +38,6 @@ export class MenuComponent {
   ngOnInit(){
     this.getMenu();
     this.getParams();
-  }
-
-  edtOrderedProd(prod:any){
-
   }
 
   rmvOrderedProd(index:any){
@@ -56,7 +53,6 @@ export class MenuComponent {
   }
 
   submitReq(){
-    console.log('Envia')
     this.orders.addToOrder(this.admins.getSessionAdmin(), this.order, this.orderProds)
     .subscribe(
       req=>{
@@ -71,7 +67,6 @@ export class MenuComponent {
   }
 
   submit(){
-    console.log()
     switch (this.selectedMod) {
       case this.modalOpts[0]:
         this.addProd(this.orderProd);
@@ -113,7 +108,6 @@ export class MenuComponent {
       } else {
         isingrsSame = 0;
       }
-      
     } else {
       this.prodEdit.inclAll = this.prodSel.inclAll;
     }
@@ -211,6 +205,23 @@ export class MenuComponent {
     this.prodEdit[attr] = (document.getElementById(attr) as HTMLInputElement).value;
   }
 
+  returnBtn(option:number){
+    switch (option) {
+      case 0:
+        document.getElementById('returnBtn')?.removeAttribute('data-bs-toggle');
+        document.getElementById('returnBtn')?.removeAttribute('data-bs-target');
+        document.getElementById('returnBtn')?.setAttribute('data-bs-dismiss','modal')
+        break;
+      case 1:
+        document.getElementById('returnBtn')?.removeAttribute('data-bs-dismiss');
+        document.getElementById('returnBtn')?.setAttribute('data-bs-toggle','modal')
+        document.getElementById('returnBtn')?.setAttribute('data-bs-target','#actionModal')
+        break;
+      default:
+        break;
+    }
+  }
+
   selectModal(modalSel:number, val?:any, index?:any){
     this.modalSel = modalSel;
     this.selectedMod = this.modalOpts[modalSel]
@@ -221,6 +232,7 @@ export class MenuComponent {
         this.orderProd.name = val.name;
         this.orderProd.type = val.type;
         this.orderProd.unitPrice = val.price;
+        this.returnBtn(1);
         break;
       case 1:
         this.prodSel = val;
@@ -230,6 +242,10 @@ export class MenuComponent {
             this.prodIngrs = prod.detailArr;
           }
         })
+        this.returnBtn(1);
+        break;
+      case 2:
+        this.returnBtn(0);
         break;
       default:
       break;
@@ -293,6 +309,9 @@ export class MenuComponent {
     .subscribe((params:Params)=>{
       if (params['order']) {
         this.order = params['order'];
+        if (this.order) {
+          this.disable = false;
+        }
       }
       this.spinner.hide();
     })

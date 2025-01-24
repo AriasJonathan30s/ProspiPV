@@ -15,6 +15,15 @@ export class OrdersService {
     private http: HttpClient
   ) { }
 
+
+  closeOrder(access:any, order:any, payment:any){
+    return this.http.get<any>(`${ environment.domain.protocol }://${ environment.domain.host }/produccion/make-payment`, { 'headers':{ 'ContentType':'application/json', 'access':access , 'order': JSON.stringify(order), 'payment':JSON.stringify(payment) }, observe:'response' });
+  }
+
+  getOrder(access:any, id:string){
+    return this.http.get<any>(`${ environment.domain.protocol }://${ environment.domain.host }/produccion/get-order`, { 'headers':{ 'ContentType':'application/json', 'access':access , 'id': id }, observe:'response' });
+  }
+
   dirWParams(ruta:string, order:any){
     this.router.navigate([ruta, order])
   }
