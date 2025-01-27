@@ -14,7 +14,7 @@ export class MenuComponent {
   menu:any[] = [];
   menuGroups:any[] = [];
   order:any;
-  modalOpts:any[] = ['Preferencia de pedido','Edita orden'];
+  modalOpts:any[] = ['Preferencia de pedido','Edita orden','Elimina orden'];
   modalSel:any;
   selectedMod:any;
   orderProds:any[] = [];
@@ -245,6 +245,9 @@ export class MenuComponent {
         this.returnBtn(1);
         break;
       case 2:
+        if (index) {
+          this.prodSel.index = index;
+        }
         this.returnBtn(0);
         break;
       default:

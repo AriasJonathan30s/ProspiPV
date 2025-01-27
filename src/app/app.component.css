@@ -21,3 +21,19 @@
 .terthiary-color {
     color: white;
 }
+
+.fourth-color {
+    color: rgb(1, 129, 54);
+}
+
+.text-larger-size {
+    font-size: larger
+}
+
+.text-x-large-size {
+    font-size: x-large;
+}
+
+.text-style-one {
+    font-style: oblique;
+}

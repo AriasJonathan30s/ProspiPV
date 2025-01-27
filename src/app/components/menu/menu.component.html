@@ -7,10 +7,10 @@
             <div *ngFor="let product of group" class="col">
                 <div class="card pointer primary-color marginer" style="width: 18rem;" (click)="selectModal(0, product)"  data-bs-toggle="modal" data-bs-target="#actionModal">
                     <div class="card-body">
-                      <h5 class="card-title secondary-color">{{ product.name}}</h5>
-                      <p>Presentación: <b>{{ product.type }}</b></p>
-                      <p>Contiene: <b>{{ product.detail }}</b></p>
-                      <p>Precio: <b>{{ product.price }}</b></p>
+                      <h4 class="card-title secondary-color">{{ product.name}}</h4>
+                      <p><b class="fourth-color text-x-large-size text-style-one">{{ product.type }}</b></p>
+                      <p>Contiene: <b class>{{ product.detail }}</b></p>
+                      <p class="bg-light" style="width: 100px; border-radius: 5px"><b>$ {{ product.price }}</b></p>
                       <span *ngFor="let type of product.types" class="card-text"><b> ~{{ type }}</b></span>
                     </div>
                 </div>
@@ -37,7 +37,8 @@
                             <td>{{ ordered.quant }}</td>
                             <td>
                                 <button class="btn btn-warning" (click)="selectModal(1,ordered,i)" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="bi bi-arrow-repeat"></i></button>
-                                <button class="btn btn-danger" (click)="rmvOrderedProd(i)"><i class="bi bi-dash-circle"></i></button>
+                                <button class="btn btn-danger" (click)="selectModal(2, '',i)" data-bs-toggle="modal" data-bs-target="#reviewModal"><i class="bi bi-dash-circle"></i></button>
+                                <!-- <button class="btn btn-danger" (click)="rmvOrderedProd(i)"><i class="bi bi-dash-circle"></i></button> -->
                             </td>
                         </tbody>
                     </table>
