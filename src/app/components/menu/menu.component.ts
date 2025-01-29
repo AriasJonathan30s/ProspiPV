@@ -14,7 +14,7 @@ export class MenuComponent {
   menu:any[] = [];
   menuGroups:any[] = [];
   order:any;
-  modalOpts:any[] = ['Preferencia de pedido','Edita orden','Elimina orden'];
+  modalOpts:any[] = ['Preferencia de pedido','Edita orden','Elimina orden', 'Revisa orden'];
   modalSel:any;
   selectedMod:any;
   orderProds:any[] = [];
@@ -38,6 +38,25 @@ export class MenuComponent {
   ngOnInit(){
     this.getMenu();
     this.getParams();
+  }
+
+  menuClean(){
+    this.menuGroups = [];
+  }
+
+  filter(name:string){
+    this.menuClean();
+    let fulteredMenu:any[] = [];
+    if (!name) {
+      this.grouper(this.menu);
+    } else {
+      this.menu.forEach(product=>{
+        if (product.name === name) {
+          fulteredMenu.push(product)
+        }
+      })
+      this.grouper(fulteredMenu);
+    }
   }
 
   rmvOrderedProd(index:any){
@@ -66,10 +85,24 @@ export class MenuComponent {
     )
   }
 
+  alert(turn:number){
+    if (turn) {
+      const alertClass = "position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle";
+      document.getElementById('alertClass')?.setAttribute('class', alertClass);
+    } else {
+      document.getElementById('alertClass')?.removeAttribute('class');
+    }
+  }
+
+  rmvRlFrmOrder(){
+    this.orderProds.splice(this.prodSel.index ,1);
+  }
+
   submit(){
     switch (this.selectedMod) {
       case this.modalOpts[0]:
         this.addProd(this.orderProd);
+        this.alert(1);
         this.lClean();
         break;
       case this.modalOpts[1]:
@@ -77,8 +110,15 @@ export class MenuComponent {
         this.lEClean();
         break;
       case this.modalOpts[2]:
-        this.submitReq();
+        this.rmvRlFrmOrder();
+        if (this.orderProds.length === 0) {
+          this.alert(0);
+        }
         break;
+        case this.modalOpts[3]:
+          this.alert(0);
+          this.submitReq();
+          break;
       default:
         break;
     }
@@ -128,7 +168,6 @@ export class MenuComponent {
   }
 
   build(option:number){
-    console.log(option)
     switch (option) {
       case 0:
         this.rmvConds();
@@ -245,13 +284,41 @@ export class MenuComponent {
         this.returnBtn(1);
         break;
       case 2:
-        if (index) {
-          this.prodSel.index = index;
-        }
+        this.prodSel =  this.orderProds[index];
+        this.prodSel.index = index;
+        this.returnBtn(0);
+        break;
+      case 3:
         this.returnBtn(0);
         break;
       default:
       break;
+    }
+  }
+
+  grouper(gotMenu:any[]){
+    if (gotMenu.length <= 3) {
+      const group:any[] = []
+      gotMenu.map((prod)=>{
+        group.push(prod);
+      })
+      this.menuGroups.push(group);
+      this.spinner.hide();
+    } else {
+      let group:any[] = [];
+      let groupLength = 3;
+      for (let i = 0; i < gotMenu.length; i++) {
+        if (i < groupLength) {
+          group.push(gotMenu[i]);
+        } else {
+          this.menuGroups.push(group);
+          group = [];
+          groupLength+=3;
+          group.push(gotMenu[i]);
+        }
+      }
+      this.menuGroups.push(group);
+      this.spinner.hide();
     }
   }
 
@@ -260,31 +327,9 @@ export class MenuComponent {
     this.orders.getMenu(this.admins.getSessionAdmin())
     .subscribe(
       resp=>{
-        const gotMenu:any[] = resp.body.message;
-        this.menu = gotMenu;
-        if (gotMenu.length <= 2) {
-          const group:any[] = []
-          gotMenu.map((prod)=>{
-            group.push(prod);
-          })
-          this.menuGroups.push(group);
-          this.spinner.hide();
-        } else {
-          let group:any[] = [];
-          let groupLength = 2;
-          for (let i = 0; i < gotMenu.length; i++) {
-            if (i < groupLength) {
-              group.push(gotMenu[i]);
-            } else {
-              this.menuGroups.push(group);
-              group = [];
-              groupLength+=2;
-              group.push(gotMenu[i]);
-            }
-          }
-          this.menuGroups.push(group);
-          this.spinner.hide();
-        }
+        console.log(resp.body.message)
+        this.menu = resp.body.message;
+        this.grouper(resp.body.message);
       },
       e=>{
         console.log(e);

@@ -1,52 +1,69 @@
 <div class="row">
-    <h1 class="primary-color text-center">Menú</h1>
-</div>
-<div class="row">
-    <div class="col-8">
-        <div *ngFor="let group of menuGroups" class="row">
-            <div *ngFor="let product of group" class="col">
-                <div class="card pointer primary-color marginer" style="width: 18rem;" (click)="selectModal(0, product)"  data-bs-toggle="modal" data-bs-target="#actionModal">
-                    <div class="card-body">
-                      <h4 class="card-title secondary-color">{{ product.name}}</h4>
-                      <p><b class="fourth-color text-x-large-size text-style-one">{{ product.type }}</b></p>
-                      <p>Contiene: <b class>{{ product.detail }}</b></p>
-                      <p class="bg-light" style="width: 100px; border-radius: 5px"><b>$ {{ product.price }}</b></p>
-                      <span *ngFor="let type of product.types" class="card-text"><b> ~{{ type }}</b></span>
-                    </div>
-                </div>
+    <div class="primary-color text-center">
+        <h1 class="float-start" style="width: 70vw;">Menú</h1>
+        <button class="btn btn-dark float-end marginer position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+            <i class="bi bi-cart4"></i>
+            <span id="alertClass"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasRightLabel">Orden</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-    <div class="col-4">
-        <div class="card">
-            <div class="card-header">
-                <h5>Agregado a la orden</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <table class="table">
-                        <thead>
+            <div class="offcanvas-body">
+                <table class="table table-light stripped">
+                    <thead>
+                        <tr> 
                             <th scope="col">Producto</th>
                             <th scope="col">Presentacion</th>
+                            <th scope="col">C/Todo?</th>
                             <th scope="col">Cant</th>
                             <th scope="col">Acción</th>
-                        </thead>
-                        <tbody *ngFor="let ordered of orderProds; index as i">
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let ordered of orderProds; index as i">
+                        <tr>
                             <th scope="row">{{ ordered.name }}</th>
                             <td>{{ ordered.type}}</td>
+                            <td>{{ ordered.inclAll}}</td>
                             <td>{{ ordered.quant }}</td>
                             <td>
                                 <button class="btn btn-warning" (click)="selectModal(1,ordered,i)" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="bi bi-arrow-repeat"></i></button>
                                 <button class="btn btn-danger" (click)="selectModal(2, '',i)" data-bs-toggle="modal" data-bs-target="#reviewModal"><i class="bi bi-dash-circle"></i></button>
                                 <!-- <button class="btn btn-danger" (click)="rmvOrderedProd(i)"><i class="bi bi-dash-circle"></i></button> -->
                             </td>
-                        </tbody>
-                    </table>
-                </div>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="row">
                     <div class="col">
-                        <button class="btn btn-success marginer"  data-bs-toggle="modal" data-bs-target="#reviewModal" (click)="selectModal(2)" [disabled]="!orderProds.length || disable"><i class="bi bi-check-circle"> Revisa</i></button>
+                        <button class="btn btn-success marginer"  data-bs-toggle="modal" data-bs-target="#reviewModal" (click)="selectModal(3)" [disabled]="!orderProds.length || disable"><i class="bi bi-check-circle"> Revisa</i></button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row marginer ">
+    <div class="row">
+        <div class="btn-group bg-light" role="group" aria-label="Basic">
+            <button type="button" class="btn btn-outline-primary active" aria-current="page" (click)="filter('')">Todos</button>
+            <button type="button" class="btn btn-outline-primary" (click)="filter('Hamburguesa')">Hamburguesas</button>
+            <button type="button" class="btn btn-outline-primary" (click)="filter('Hot dogs')">Hot dogs</button>
+            <button class="btn btn-outline-primary" (click)="filter('Alitas')">Alitas</button>
+            <button class="btn btn-outline-primary" (click)="filter('Costillas')">Costillas</button>
+            <button class="btn btn-outline-primary" (click)="filter('Manitas de puerco')">Manitas de puerco</button>
+        </div>
+    </div>
+    <div *ngFor="let group of menuGroups" class="row">
+        <div *ngFor="let product of group" class="col">
+            <div class="card pointer primary-color marginer" style="width: 18rem;" (click)="selectModal(0, product)"  data-bs-toggle="modal" data-bs-target="#actionModal">
+                <div class="card-body">
+                    <h4 class="card-title secondary-text-color">{{ product.name}}</h4>
+                    <p><b class="fourth-text-color text-x-large-size text-style-one">{{ product.type }}</b></p>
+                    <p>Contiene: <b class>{{ product.detail }}</b></p>
+                    <p class="bg-light text-large secondary-text-color" style="width: 100px; border-radius: 5px"><b>$ {{ product.price }}</b></p>
+                    <span *ngFor="let type of product.types" class="card-text"><b> ~{{ type }}</b></span>
                 </div>
             </div>
         </div>
@@ -171,16 +188,32 @@
             <p *ngIf="prodEdit.inclAll === 'No'">Sin: <b>{{ prodEdit.rmvCond}}</b>.</p>
         </div>
         <div *ngIf="selectedMod == modalOpts[2]" class="modal-body">
+            <h4 class="text-danger">Deseas eliminar este producto?</h4>
+            <div *ngIf="prodSel" class="card">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <span>Producto: <b class="fourth-text-color">{{ prodSel.name }} </b> </span> <span> <b class="secondary-text-color"> {{ prodSel.type }}</b></span>
+                    </li>
+                    <li class="list-group-item">
+                        <span>Con todo? <b>{{ prodSel.inclAll }}</b></span>
+                    </li>
+                    <li class="list-group-item" *ngIf="prodSel.rmvCond">
+                        <span>Sin: <b >{{ prodSel.rmvCond }}</b></span>
+                    </li>
+                    <li class="list-group-item">
+                        <span>Cantidad: <b>{{ prodSel.quant }}</b></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div *ngIf="selectedMod == modalOpts[3]" class="modal-body">
             <div *ngFor="let order of orderProds; index as i" class="card marginer" style="width: 18rem;">
                 <div class="card-header">
-                    Producto {{ i+1 }}
+                    <p class="fourth-text-color"><b>Producto {{ i+1 }}</b></p>
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        Nombre: <b>{{ order.name }}</b>
-                    </li>
-                    <li class="list-group-item">
-                        Presentacion <b>{{ order.type }}</b>
+                        <span>Nombre: <b class="secondary-text-color">{{ order.name }} </b> </span> <span> <b class="fourth-text-color"> {{ order.type }}</b></span>
                     </li>
                     <li class="list-group-item">
                         Cantidad: <b>{{ order.quant }}</b>

@@ -13,7 +13,7 @@ import { AdminService } from '../../services/admin.service';
 })
 export class OrderInterfaceComponent {
   modalTypes:any[] = ['Nuevo pedido','Ver cuenta'];
-  payMethods:any[] = ['','Efectivo','Transferencia','Tarjeta de credito', 'Tarjeta de debito'];
+  payMethods:any[] = ['Efectivo','Transferencia','Tarjeta de credito', 'Tarjeta de debito'];
   type:any;
   selectedModal:String = '';
   getIngredients:any;
@@ -21,7 +21,7 @@ export class OrderInterfaceComponent {
   orderSel:any;
   orderEd:any = {};
   viewOrderAccnt: any;
-  payVals:any = { pay:0, payMethod:'', change:0 };
+  payVals:any = { pay:0, payMethod: this.payMethods[0], change:0 };
   getOrdersGrps:any;
   rmvDisabled:number = 1;
 

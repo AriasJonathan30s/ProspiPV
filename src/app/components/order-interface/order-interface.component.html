@@ -1,5 +1,5 @@
 
-<div class="row terthiary-color paddiner text-center">
+<div class="row terthiary-text-color paddiner text-center">
     <h1>ADMINISTRADOR DE PEDIDOS</h1>
 </div>
 <div class="row paddiner">
@@ -14,7 +14,7 @@
     <div *ngFor="let order of group" class="col">
         <div class="card primary-color marginer" style="width: 18rem;" >
             <div class="card-body">
-              <h5 class="card-title secondary-color">{{ order.cxName}}</h5>
+              <h5 class="card-title secondary-text-color">{{ order.cxName}}</h5>
               <p>Productos pedidos: <b>{{ order.prodQuant }}</b></p>
               <p class="card-text">Registrado: <b>{{ order.requesDateHour }}</b></p>
               <div class="row">
@@ -51,16 +51,16 @@
               <li *ngFor="let prod of viewOrderAccnt.products" class="paddiner">
                 <span>Producto: <b>  {{ prod.name }} </b> </span> <span> <b>  {{ prod.type }}</b></span>
                 <p>Cantidad: <b>{{ prod.quant }}</b></p>
-                <span>Precio unitario: <b>${{ prod.unitPrice }} </b> </span> <span> Precio total: <b class="secondary-color">${{ prod.totPrice }}</b></span>
+                <span>Precio unitario: <b>${{ prod.unitPrice }} </b> </span> <span> Precio total: <b class="secondary-text-color">${{ prod.totPrice }}</b></span>
               </li>
             </ul>
-            <p>Total a pagar: <b class="secondary-color">${{ viewOrderAccnt.price }}</b></p>
+            <p>Total a pagar: <b class="secondary-text-color">${{ viewOrderAccnt.price }}</b></p>
             <div class="input-group mb-3 marginer">
               <span class="input-group-text">Cantidad a pagar</span>
               <input class="form-control" type="number" id="payVal" name="payVal">
               <button class="btn btn-outline-success" (click)="regPayment()">Agrega</button>
           </div>
-          <select class="form-select" aria-label="Default select" ngModel (ngModelChange)="selectPayMethod($event)" id="payMethod">
+          <select class="form-select" aria-label="Default select" [(ngModel)]="this.payVals.payMethod" (ngModelChange)="selectPayMethod($event)" id="payMethod">
             <option *ngFor="let method of payMethods" [value]="method">{{ method }}</option>
           </select>
           </div>

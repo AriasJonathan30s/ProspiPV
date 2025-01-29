@@ -41,8 +41,8 @@
 </div>
   <footer class="py-5 bg-dark" data-bs-theme="dark">
     <div class="row marginer">
-      <div *ngIf="bsns" class="col-4 col-md-5 mb-3 terthiary-color">
-        <h5 class="terthiary-color">NOSOTROS</h5>
+      <div *ngIf="bsns" class="col-4 col-md-5 mb-3 terthiary-text-color">
+        <h5>NOSOTROS</h5>
         <ul class="nav flex-column">
           <li class="nav-item mb-2"><p>Negocio: <b>{{ bsns.name }}</b></p></li>
           <li class="nav-item mb-2"><p>Ramo de negocio: <b>{{ bsns.role }}</b></p></li>
@@ -73,7 +73,7 @@
         </ul>
       </div> -->
     </div>
-    <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top marginer terthiary-color">
+    <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top marginer terthiary-text-color">
       <p>© 2024 <b *ngIf="bsns">{{ bsns.name }}</b>, S.A de C.V. Todos los derechos reservados.</p>
       <ul class="list-unstyled d-flex">
         <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>

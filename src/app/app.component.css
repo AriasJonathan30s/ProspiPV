@@ -15,19 +15,39 @@
 }
 
 .secondary-color {
-    color: rgb(212, 27, 0);
+    background-color: rgb(212, 27, 0);
 }
 
 .terthiary-color {
-    color: white;
+    background-color: white;
 }
 
 .fourth-color {
+    background-color: rgb(1, 129, 54);
+}
+
+.primary-text-color {
+    color: rgb(255, 206, 85);
+}
+
+.secondary-text-color {
+    color: rgb(212, 27, 0);
+}
+
+.terthiary-text-color {
+    color: white;
+}
+
+.fourth-text-color {
     color: rgb(1, 129, 54);
 }
 
+.text-large {
+    font-size: large;
+}
+
 .text-larger-size {
-    font-size: larger
+    font-size: larger;
 }
 
 .text-x-large-size {
