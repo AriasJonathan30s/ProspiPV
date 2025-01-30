@@ -15,6 +15,9 @@ export class OrdersService {
     private http: HttpClient
   ) { }
 
+  chngOrdNm(access:any, id:string, cxName:string){
+    return this.http.get<any>(`${ environment.domain.protocol }://${ environment.domain.host }/produccion/edit-order-name`, { 'headers':{ 'ContentType':'application/json', 'access':access , 'id': id, 'cxName':cxName }, observe:'response' });
+  }
 
   closeOrder(access:any, order:any, payment:any){
     return this.http.get<any>(`${ environment.domain.protocol }://${ environment.domain.host }/produccion/make-payment`, { 'headers':{ 'ContentType':'application/json', 'access':access , 'order': JSON.stringify(order), 'payment':JSON.stringify(payment) }, observe:'response' });

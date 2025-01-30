@@ -1,6 +1,6 @@
 <div class="row">
     <div class="primary-color text-center">
-        <h1 class="float-start" style="width: 70vw;">Menú</h1>
+        <h1 class="float-start" style="width: 85vw;">Menú</h1>
         <button class="btn btn-dark float-end marginer position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
             <i class="bi bi-cart4"></i>
             <span id="alertClass"></span>
@@ -30,7 +30,6 @@
                             <td>
                                 <button class="btn btn-warning" (click)="selectModal(1,ordered,i)" data-bs-toggle="modal" data-bs-target="#actionModal"><i class="bi bi-arrow-repeat"></i></button>
                                 <button class="btn btn-danger" (click)="selectModal(2, '',i)" data-bs-toggle="modal" data-bs-target="#reviewModal"><i class="bi bi-dash-circle"></i></button>
-                                <!-- <button class="btn btn-danger" (click)="rmvOrderedProd(i)"><i class="bi bi-dash-circle"></i></button> -->
                             </td>
                         </tr>
                     </tbody>
@@ -47,12 +46,7 @@
 <div class="row marginer ">
     <div class="row">
         <div class="btn-group bg-light" role="group" aria-label="Basic">
-            <button type="button" class="btn btn-outline-primary active" aria-current="page" (click)="filter('')">Todos</button>
-            <button type="button" class="btn btn-outline-primary" (click)="filter('Hamburguesa')">Hamburguesas</button>
-            <button type="button" class="btn btn-outline-primary" (click)="filter('Hot dogs')">Hot dogs</button>
-            <button class="btn btn-outline-primary" (click)="filter('Alitas')">Alitas</button>
-            <button class="btn btn-outline-primary" (click)="filter('Costillas')">Costillas</button>
-            <button class="btn btn-outline-primary" (click)="filter('Manitas de puerco')">Manitas de puerco</button>
+            <button *ngFor="let name of filters" type="button" [id]="name+'filter'" class="btn btn-outline-primary" aria-current="page" (click)="filter(name)"><span *ngIf="name === ''">Filtra todos</span>{{ name }}</button>
         </div>
     </div>
     <div *ngFor="let group of menuGroups" class="row">
@@ -71,7 +65,7 @@
 </div>
 
 <!-- MODAL -->
-<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" aria-hidden="true">
+<div class="modal fade" id="actionModal" tabindex="-1" aria-labelledby="actionModalLabel" >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -99,9 +93,27 @@
                             Elimina ingredientes
                         </label>
                         <hr />
-                        <div *ngFor="let cond of prodPref.detailArr" class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="delCond(cond)">
-                            <label class="form-check-label" for="cond">{{ cond }}</label>
+                        <div *ngFor="let grps of prodPrefDtlArr" class="form-check form-check-inline row">
+                            <div *ngFor="let cond of grps" class="col">
+                                <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="delCond(cond)">
+                                <label class="form-check-label" for="cond">{{ cond }}</label>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="flexRatioDefault" id="flexRadioDefault3" (click)="iclFrFrieds()">
+                            <label class="form-check-label" for="flexRadioDefault3">Con papas</label>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <label>Condimentos extras</label>
+                            <input class="form-control" type="text" name="filterAddlCond" id="filterAddlCond" (keyup)="filterAddlCond()" placeholder="Escribe para filtrar">
+                        </div>
+                        <div *ngFor="let grp of showAddlConds" class="form-check row">
+                            <div *ngFor="let cond of grp" class="col">
+                                <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="addlCond(cond)">
+                                <label class="form-check-label" for="cond">{{ cond }}</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,8 +135,8 @@
                     <button class="btn btn-outline-success" (click)="editMenuProd('quant')">Agrega</button>
                 </div>
                 <div>
-                    <span *ngIf="prodSel.inclAll === 'Si'">Ingredientes: <b>Con todo</b></span>
-                    <span *ngIf="prodSel.rmvCond">Ingredientes: Sin <b>{{ prodSel.rmvCond }}</b></span>
+                    <span *ngIf="prodSel.inclAll === 'Si'">Ingredientes: <b class="secondary-text-color">Con todo</b></span>
+                    <span *ngIf="prodSel.rmvCond">Ingredientes: Sin <b class="secondary-text-color">{{ prodSel.rmvCond }}</b></span>
                 </div>
                 <div>
                     <hr />
@@ -146,6 +158,11 @@
                             <label class="form-check-label" for="cond">{{ cond }}</label>
                         </div>
                     </div>
+                    <hr />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="flexRatioDefault" id="flexRadioDefault3" (click)="iclFrFrieds()">
+                        <label class="form-check-label" for="flexRadioDefault3">Con papas</label>
+                    </div>
                 </div>
             </form>
         </div>
@@ -158,7 +175,7 @@
 </div>
 
 <!-- MODAL -->
-<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -166,23 +183,24 @@
           <button type="button" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div *ngIf="selectedMod == modalOpts[0]" class="modal-body">
-            <h5>{{ orderProd.name }}</h5>
-            <p>Presentación: <b>{{ orderProd.type }}</b></p>
-            <p>Cantidad: <b>{{ orderProd.quant }}</b></p>
-            <p>Con todo?: <b>{{ orderProd.inclAll }}</b></p>
+            <h4 class="secondary-text-color">{{ orderProd.name }}</h4>
+            <p><b class="text-larger fourth-text-color">{{ orderProd.type }}</b></p>
+            <p>Cantidad: <b class="secondary-text-color">{{ orderProd.quant }}</b></p>
+            <p>Con todo?: <b class="secondary-text-color">{{ orderProd.inclAll }}</b></p>
             <p *ngIf="orderProd.inclAll === 'No' && orderProd.rmvCond">Sin <b>{{ orderProd.rmvCond }}</b></p>
+            <p>Incluye papas? <b class="secondary-text-color">{{ frnFriesOpts[frenchFries] }}</b></p>
+            <p id="testing">{{ addAddlIngr }}</p>
+            <p *ngIf="addAddlIngr.length">Condimentos adicionales: <b *ngFor="let addlIngr of addAddlIngr" class="fourth-text-color"> {{ addlIngr }}</b></p>
         </div>
         <div *ngIf="selectedMod == modalOpts[1]" class="modal-body">
-            <h5>Original</h5>
-            <p>Nombre: <b>{{ prodSel.name}}</b></p>
-            <p>Presentacion:<b>{{ prodSel.type}}</b></p>
+            <h4>Original</h4>
+            <span class="text-large secondary-text-color"><b>{{ prodSel.name }} </b> </span> <span class="text-large fourth-text-color"> <b> {{ prodSel.type }}</b></span>
             <p>Cantidad: <b>{{ prodSel.quant}}</b></p>
             <p>Incluye todo: <b>{{ prodSel.inclAll}}</b></p>
             <p *ngIf="prodSel.inclAll === 'No'">Sin: <b>{{ prodSel.rmvCond}}</b>.</p>
             <hr />
-            <h5>Modificado</h5>
-            <p>Nombre: <b>{{ prodEdit.name}}</b></p>
-            <p>Presentacion:<b>{{ prodEdit.type}}</b></p>
+            <h4>Modificado</h4>
+            <span class="text-large secondary-text-color"><b>{{ prodEdit.name }} </b> </span> <span class="text-large fourth-text-color"> <b> {{ prodEdit.type}}</b></span>
             <p>Cantidad: <b>{{ prodEdit.quant}}</b></p>
             <p>Incluye todo: <b>{{ prodEdit.inclAll}}</b></p>
             <p *ngIf="prodEdit.inclAll === 'No'">Sin: <b>{{ prodEdit.rmvCond}}</b>.</p>

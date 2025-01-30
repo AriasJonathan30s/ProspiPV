@@ -12,6 +12,7 @@ import { AdminService } from '../../services/admin.service';
 })
 export class MenuComponent {
   menu:any[] = [];
+  filters:any[] = [''];
   menuGroups:any[] = [];
   order:any;
   modalOpts:any[] = ['Preferencia de pedido','Edita orden','Elimina orden', 'Revisa orden'];
@@ -19,6 +20,7 @@ export class MenuComponent {
   selectedMod:any;
   orderProds:any[] = [];
   prodPref:any;
+  prodPrefDtlArr:any[] = [];
   delIngr:any[] = [];
   editDelIngr:any[] = [];
   orderProd:any = { id:'', name: '', type: '', inclAll: 'Si', unitPrice: 0.00, quant: 1, totPrice: 0.00 };;
@@ -26,6 +28,11 @@ export class MenuComponent {
   prodIngrs:any[] = [];
   prodEdit:any = { quant: 1};
   disable:boolean = true;
+  frenchFries:number = 0;
+  frnFriesOpts:any[] = ['No','Si'];
+  gotAddlConds:any[] = [];
+  showAddlConds:any[] = [];
+  addAddlIngr:any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -57,6 +64,17 @@ export class MenuComponent {
       })
       this.grouper(fulteredMenu);
     }
+    this.unactiveFlt(name);
+  }
+
+  unactiveFlt(name:string){
+    this.filters.forEach(fltsNm=>{
+      if (fltsNm === name) {
+        document.getElementById(fltsNm+'filter')?.setAttribute('class','btn btn-outline-primary active');
+      } else {
+        document.getElementById(fltsNm+'filter')?.setAttribute('class','btn btn-outline-primary');
+      }
+    })
   }
 
   rmvOrderedProd(index:any){
@@ -122,13 +140,17 @@ export class MenuComponent {
       default:
         break;
     }
-
   }
 
   rmvConds(){
     if (this.orderProd.inclAll === 'No') {
       this.orderProd.rmvCond = this.delIngr;
     }
+  }
+
+  addAddls(){
+      this.orderProd.adds = this.frenchFries;
+      this.orderProd.extraConds = this.addAddlIngr;
   }
 
   buildEdit(){
@@ -162,8 +184,6 @@ export class MenuComponent {
       && this.prodEdit.unitPrice === this.prodSel.unitPrice && this.prodEdit.inclAll === this.prodSel.inclAll && isingrsSame
       && this.prodEdit.quant === this.prodSel.quant) {
       this.launchMessage('warn','Atencion','No hay cambios')
-    } else {
-      console.log(this.prodEdit)
     }
   }
 
@@ -171,6 +191,7 @@ export class MenuComponent {
     switch (option) {
       case 0:
         this.rmvConds();
+        this.addAddls();
         break;
       case 1:
         this.buildEdit();
@@ -186,9 +207,18 @@ export class MenuComponent {
       if (value > 1) {
         this.orderProd.quant = value;
         this.orderProd.totPrice = this.orderProd.unitPrice * value;
+        this.launchMessage('success','Atención','Cantidad agregada.');
       }
     } else {
       this.orderProd.totPrice = this.orderProd.unitPrice * this.orderProd.quant;
+    }
+  }
+
+  iclFrFrieds(){
+    if (this.frenchFries === 0) {
+      this.frenchFries = 1;
+    } else {
+      this.frenchFries = 0;
     }
   }
 
@@ -235,6 +265,57 @@ export class MenuComponent {
     this.editIsIngrDel(cond);
   }
 
+  filterAddlCond(){
+    const filterVal:string = (document.getElementById('filterAddlCond') as HTMLInputElement).value;
+    if (filterVal === '') {
+      this.showAddlConds = this.gotAddlConds;
+    } else {
+      const conds:any[] = [];
+      this.gotAddlConds.forEach(group=>{
+        let condim:any[] = group;
+        condim.forEach(cond=>{
+          conds.push(cond);
+        })
+      })
+      const filteredConds:any[] = [];
+      conds.forEach(cond=>{
+        if (cond.includes(filterVal)) {
+          filteredConds.push(cond);
+        }
+      })
+      const grpsCnds:any[] = [];
+      let grpCnds:any[] = [];
+      let grpQnt:number = 2;
+      if (filteredConds.length <= 3) {
+        this.showAddlConds = [filteredConds];
+      } else {
+        filteredConds.forEach((cond,index)=>{
+          if (index <= grpQnt) {
+            grpCnds.push(cond);
+            if (filteredConds.length === index+1) {
+              grpsCnds.push(grpCnds);
+            }
+          } else {
+            grpsCnds.push(grpCnds);
+            grpCnds = [];
+            grpQnt += 3;
+            grpCnds.push(cond);
+          }
+        })
+        this.showAddlConds = grpsCnds;
+      }
+    }
+  }
+
+  addlCond(cond:string){
+    if (this.addAddlIngr.includes(cond) === false) {
+      this.addAddlIngr.push(cond);
+    } else {
+      const i = this.addAddlIngr.indexOf(cond);
+      this.addAddlIngr.splice(i,1);
+    }
+  }
+
   delCond(cond:string){
     document.getElementById('flexRadioDefault2')?.click();
     this.isIngrDel(cond);
@@ -261,6 +342,31 @@ export class MenuComponent {
     }
   }
 
+  dtlGrouper(){
+    const prodPrefDtlArr:any[] = this.prodPref.detailArr;
+    const grpedProds:any[] = []
+    let grpQnt = 2;
+    if (this.prodPref.detailArr.length <= 3) {
+      this.prodPrefDtlArr = this.prodPref.detailArr;
+    } else {
+      let grpProds:any[] = [];
+      prodPrefDtlArr.forEach((cond,index)=>{
+        if (index <= grpQnt) {
+          grpProds.push(cond)
+          if (this.prodPref.detailArr.length === index+1) {
+            grpedProds.push(grpProds)
+          }
+        } else {
+          grpQnt += 3;
+          grpedProds.push(grpProds)
+          grpProds = [];
+          grpProds.push(cond)
+        }
+      })
+      this.prodPrefDtlArr = grpedProds;
+    }
+  }
+
   selectModal(modalSel:number, val?:any, index?:any){
     this.modalSel = modalSel;
     this.selectedMod = this.modalOpts[modalSel]
@@ -271,6 +377,7 @@ export class MenuComponent {
         this.orderProd.name = val.name;
         this.orderProd.type = val.type;
         this.orderProd.unitPrice = val.price;
+        this.dtlGrouper();
         this.returnBtn(1);
         break;
       case 1:
@@ -327,12 +434,18 @@ export class MenuComponent {
     this.orders.getMenu(this.admins.getSessionAdmin())
     .subscribe(
       resp=>{
-        console.log(resp.body.message)
-        this.menu = resp.body.message;
-        this.grouper(resp.body.message);
+        this.gotAddlConds = resp.body.message[1];
+        this.showAddlConds = resp.body.message[1];
+        const filters:any[] = resp.body.message[0][1];
+        filters.forEach(name=>{
+          this.filters.push(name)
+        })
+        this.menu = resp.body.message[0][0];
+        this.grouper(resp.body.message[0][0]);
+        document.getElementById(this.filters[0]+'filter')?.setAttribute('class','btn btn-outline-primary active');
       },
       e=>{
-        console.log(e);
+        console.warn(e);
         this.launchMessage('error','Error',e.body.message);
       }
     )

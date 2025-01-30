@@ -12,7 +12,7 @@ import { AdminService } from '../../services/admin.service';
   styleUrl: '../../app.component.css'
 })
 export class OrderInterfaceComponent {
-  modalTypes:any[] = ['Nuevo pedido','Ver cuenta'];
+  modalTypes:any[] = ['Nuevo pedido','Ver cuenta', 'Edita Nombre'];
   payMethods:any[] = ['Efectivo','Transferencia','Tarjeta de credito', 'Tarjeta de debito'];
   type:any;
   selectedModal:String = '';
@@ -20,6 +20,7 @@ export class OrderInterfaceComponent {
   newOrder:any = { cxName: '', status: 1 };
   orderSel:any;
   orderEd:any = {};
+  cxName:string = '';
   viewOrderAccnt: any;
   payVals:any = { pay:0, payMethod: this.payMethods[0], change:0 };
   getOrdersGrps:any;
@@ -73,7 +74,7 @@ export class OrderInterfaceComponent {
     this.orders.dirWParams(ruta, id);
   }
 
-  submit(){
+  closeOrder(){
     if (this.payVals.pay && this.payVals.payMethod && parseFloat(this.payVals.pay) >= this.viewOrderAccnt.price) {
       this.orders.closeOrder(this.admins.getSessionAdmin(), this.viewOrderAccnt, this.payVals)
       .subscribe(
@@ -88,6 +89,39 @@ export class OrderInterfaceComponent {
       )
     } else {
       this.launchMessage('warn','Atención','El pago es menor que la cantidad a pagar');
+    }
+  }
+
+  editName(){
+    if (this.cxName === '' || this.cxName === this.orderSel.cxName || !this.orderSel.id) {
+      this.launchMessage('warn','Atencion','Campo no debe estar vacio ni nombre igual.')
+    } else {
+      this.orders.chngOrdNm(this.admins.getSessionAdmin(),this.orderSel.id, this.cxName)
+      .subscribe(
+        resp=>{
+          location.reload();
+          this.launchMessage('success','Exito', resp.body.message);
+        },
+        e=>{
+          console.warn(e)
+          this.launchMessage('error','Error',e.error.message);
+        }
+      )
+    }
+  }
+
+  submit(){
+    switch (this.type) {
+      case 0:
+        break;
+      case 1:
+        this.closeOrder();
+        break;
+      case 2:
+        this.editName();
+        break;
+      default:
+        break;
     }
   }
 
@@ -167,7 +201,20 @@ export class OrderInterfaceComponent {
     )
   }
 
-  modalType(type:number, orderId?:any){
+  editOrderName(id:string){
+    const nameVal = (document.getElementById(id) as HTMLInputElement).value;
+    if (nameVal === '' || nameVal === this.orderSel.cxName) {
+      this.launchMessage('warn','Atencion','Campo no debe estar vacio ni nombre igual.')
+    } else {
+     this.cxName = nameVal; 
+    }
+  }
+
+  selOrder(orderVals:any){
+    this.orderSel = orderVals;
+  }
+
+  modalType(type:number, order?:any){
     this.type = type;
     this.selectedModal = this.modalTypes[type];
     switch (type) {
@@ -177,10 +224,14 @@ export class OrderInterfaceComponent {
         document.getElementById('builder')?.setAttribute(attrs[2], attrs[3])
         break;
       case 1:
-        this.getOrder(orderId);
+        this.getOrder(order);
         break;
-        default:
+      case 2:
+        this.selOrder(order);
+        break;
+      default:
         break
+      
     }
   }
 

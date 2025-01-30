@@ -14,7 +14,7 @@
     <div *ngFor="let order of group" class="col">
         <div class="card primary-color marginer" style="width: 18rem;" >
             <div class="card-body">
-              <h5 class="card-title secondary-text-color">{{ order.cxName}}</h5>
+              <h5 class="card-title secondary-text-color">{{ order.cxName}}<button type="button" class="btn btn-link fourth-text-color" data-bs-toggle="modal" data-bs-target="#actionModal" (click)="modalType(2,order)"><i class="bi bi-pencil"></i></button></h5>
               <p>Productos pedidos: <b>{{ order.prodQuant }}</b></p>
               <p class="card-text">Registrado: <b>{{ order.requesDateHour }}</b></p>
               <div class="row">
@@ -65,6 +65,13 @@
           </select>
           </div>
         </div>
+        <div *ngIf="modalTypes[type] == modalTypes[2]" class="modal-body">
+        <div class="input-group mb-3 marginer">
+          <span class="input-group-text">Nombre: {{ orderSel.cxName }}</span>
+          <input class="form-control" type="text" id="orderName" placeholder="Edita nombre" name="orderName" autocomplete="on">
+          <button class="btn btn-outline-success" (click)="editOrderName('orderName')">Agrega</button>
+        </div>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="clear(type)">Close</button>
           <button type="button" class="btn btn-primary" id="builder" (click)="build()" data-bs-toggle="modal" data-bs-target="#reviewModal">Revisa</button>
@@ -86,6 +93,13 @@
             <p>Metodo de pago: <b>{{ payVals.payMethod }}</b></p>
             <p>Paga: <b>${{ payVals.pay }}</b></p>
             <p>Cambio: <b>${{ payVals.change }}</b></p>
+        </div>
+        <div *ngIf="modalTypes[type] === modalTypes[2]" class="modal-body">
+          <h4>Original</h4>
+          <span class="text-large secondary-text-color"><b>{{ orderSel.cxName }}</b></span>
+          <hr />
+          <h4>Modificado</h4>
+          <span class="text-large secondary-text-color"><b>{{ cxName }} </b> </span>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>
