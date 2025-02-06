@@ -116,22 +116,29 @@ export class MenuComponent {
     this.orderProds.splice(this.prodSel.index ,1);
   }
 
+  scrollTop(){
+    document.documentElement.scrollTop = 0;
+  }
+
   submit(){
     switch (this.selectedMod) {
       case this.modalOpts[0]:
         this.addProd(this.orderProd);
         this.alert(1);
         this.lClean();
+        this.scrollTop();
         break;
       case this.modalOpts[1]:
         this.modifOrder();
         this.lEClean();
+        this.scrollTop();
         break;
       case this.modalOpts[2]:
         this.rmvRlFrmOrder();
         if (this.orderProds.length === 0) {
           this.alert(0);
         }
+        this.scrollTop();
         break;
         case this.modalOpts[3]:
           this.alert(0);
