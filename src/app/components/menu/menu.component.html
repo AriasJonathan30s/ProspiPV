@@ -46,7 +46,7 @@
 <div class="row marginer ">
     <div class="row">
         <div class="btn-group bg-light" role="group" aria-label="Basic">
-            <button *ngFor="let name of filters" type="button" [id]="name+'filter'" class="btn btn-outline-primary" aria-current="page" (click)="filter(name)"><span *ngIf="name === ''">Filtra todos</span>{{ name }}</button>
+            <button *ngFor="let name of filters" type="button" [id]="name+'filter'" class="btn btn-outline-primary" aria-current="page" (click)="filter(name)"><span *ngIf="name === ''">Todos</span>{{ name }}</button>
         </div>
     </div>
     <div *ngFor="let group of menuGroups" class="row">
@@ -106,12 +106,17 @@
                         </div>
                         <hr />
                         <div class="row">
+                            <div class="input-group mb-3 marginer">
+                                <input class="form-control" type="number" id="extra-cost" placeholder="Ingrese costo del extra" name="extraCost" autocomplete="on">
+                            </div>
+                        </div>
+                        <div class="row">
                             <label>Condimentos extras</label>
                             <input class="form-control" type="text" name="filterAddlCond" id="filterAddlCond" (keyup)="filterAddlCond()" placeholder="Escribe para filtrar">
                         </div>
-                        <div *ngFor="let grp of showAddlConds" class="form-check row">
+                        <div *ngFor="let grp of showAddlConds" class="form-check row" id="newExtraConds">
                             <div *ngFor="let cond of grp" class="col">
-                                <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="addlCond(cond)">
+                                <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="addlCond(cond)" [checked]="false">
                                 <label class="form-check-label" for="cond">{{ cond }}</label>
                             </div>
                         </div>
@@ -139,6 +144,14 @@
                     <span *ngIf="prodSel.rmvCond">Ingredientes: Sin <b class="secondary-text-color">{{ prodSel.rmvCond }}</b></span>
                 </div>
                 <div>
+                    <span *ngIf="prodSel.adds === 1"><b class="fourth-text-color">Con papas</b></span>
+                    <span *ngIf="prodSel.adds === 0"><b class="fourth-text-color">Sin papas</b></span>
+                </div>
+                <div *ngIf="prodSel.extraConds">
+                    <span *ngIf="prodSel.extraConds.length > 0">Condimentos extras: <b *ngFor="let cond of prodSel.extraConds" class="secondary-text-color"> {{ cond }} </b></span>
+                    <span *ngIf="prodSel.extraConds.length > 0 || prodSel.adds === 1">Precio de extras: <b class="secondary-text-color"> {{ prodSel.extraCost }} </b></span>
+                </div>
+                <div>
                     <hr />
                     <h5>Edita</h5>
                     <div class="form-check">
@@ -161,7 +174,23 @@
                     <hr />
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" name="flexRatioDefault" id="flexRadioDefault3" (click)="iclFrFrieds()">
-                        <label class="form-check-label" for="flexRadioDefault3">Con papas</label>
+                        <label class="form-check-label" for="flexRadioDefault3" >Con papas</label>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="input-group mb-3 marginer">
+                            <input class="form-control" type="number" id="edit-extra-cost" placeholder="Ingrese costo del extra" name="extraCost" autocomplete="on">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label>Condimentos extras</label>
+                        <input class="form-control" type="text" name="filterAddlCond" id="filterAddlCond" (keyup)="filterAddlCond()" placeholder="Escribe para filtrar">
+                    </div>
+                    <div *ngFor="let grp of showAddlConds" class="form-check row" id="editExtraConds">
+                        <div *ngFor="let cond of grp" class="col">
+                            <input class="form-check-input" type="checkbox" [id]="cond" value="0" (click)="addlCond(cond)" [checked]="false">
+                            <label class="form-check-label" for="cond">{{ cond }}</label>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -186,24 +215,40 @@
             <h4 class="secondary-text-color">{{ orderProd.name }}</h4>
             <p><b class="text-larger fourth-text-color">{{ orderProd.type }}</b></p>
             <p>Cantidad: <b class="secondary-text-color">{{ orderProd.quant }}</b></p>
-            <p>Con todo?: <b class="secondary-text-color">{{ orderProd.inclAll }}</b></p>
-            <p *ngIf="orderProd.inclAll === 'No' && orderProd.rmvCond">Sin <b>{{ orderProd.rmvCond }}</b></p>
-            <p>Incluye papas? <b class="secondary-text-color">{{ frnFriesOpts[frenchFries] }}</b></p>
-            <p id="testing">{{ addAddlIngr }}</p>
-            <p *ngIf="addAddlIngr.length">Condimentos adicionales: <b *ngFor="let addlIngr of addAddlIngr" class="fourth-text-color"> {{ addlIngr }}</b></p>
+            <p *ngIf="orderProd.inclAll === 'Si'">Ingredientes: <b class="secondary-text-color">Con todo</b></p>
+            <p *ngIf="orderProd.inclAll === 'No' && orderProd.rmvCond">Sin <b class="secondary-text-color">{{ orderProd.rmvCond }}</b></p>
+            <p>Con papas? <b class="secondary-text-color">{{ frnFriesOpts[frenchFries] }}</b></p>
+            <div *ngIf="addAddlIngr">
+                <p *ngIf="addAddlIngr.length">Condimentos adicionales: <b *ngFor="let addlIngr of addAddlIngr" class="fourth-text-color"> {{ addlIngr }}</b></p>
+                <p *ngIf="addAddlIngr.length || frnFriesOpts[frenchFries] === 'Si'">Costo de extra: <b class="fourth-text-color">{{ orderProd.extraCost }}</b></p>
+            </div>
         </div>
         <div *ngIf="selectedMod == modalOpts[1]" class="modal-body">
-            <h4>Original</h4>
-            <span class="text-large secondary-text-color"><b>{{ prodSel.name }} </b> </span> <span class="text-large fourth-text-color"> <b> {{ prodSel.type }}</b></span>
-            <p>Cantidad: <b>{{ prodSel.quant}}</b></p>
-            <p>Incluye todo: <b>{{ prodSel.inclAll}}</b></p>
-            <p *ngIf="prodSel.inclAll === 'No'">Sin: <b>{{ prodSel.rmvCond}}</b>.</p>
+            <div class="row">
+                <h4>Original</h4>
+                <span class="text-large secondary-text-color"><b>{{ prodSel.name }} </b> </span> <span class="text-large fourth-text-color"> <b> {{ prodSel.type }}</b></span>
+                <p>Cantidad: <b>{{ prodSel.quant}}</b></p>
+                <p *ngIf="prodSel.inclAll === 'Si'">Ingredientes: <b class="secondary-text-color">Con todo</b></p>
+                <p *ngIf="prodSel.inclAll === 'No'">Sin: <b class="secondary-text-color"> {{ prodSel.rmvCond }}</b>.</p>
+                <p *ngIf="prodSel.adds === 1">Adicionales: <b class="secondary-text-color">Con papas</b></p>
+                <div *ngIf="prodSel.extraConds">
+                    <p *ngIf="prodSel.extraConds.length > 0">Extra: <b *ngFor="let xtrCnd of prodSel.extraConds" class="secondary-text-color">{{ xtrCnd }}</b></p>
+                    <p *ngIf="prodSel.adds === 1 && prodSel.extraConds.length > 0">Precio por extras: <b class="secondary-text-color">{{ prodSel.extraCost }}</b></p>
+                </div>
+            </div>
             <hr />
-            <h4>Modificado</h4>
-            <span class="text-large secondary-text-color"><b>{{ prodEdit.name }} </b> </span> <span class="text-large fourth-text-color"> <b> {{ prodEdit.type}}</b></span>
-            <p>Cantidad: <b>{{ prodEdit.quant}}</b></p>
-            <p>Incluye todo: <b>{{ prodEdit.inclAll}}</b></p>
-            <p *ngIf="prodEdit.inclAll === 'No'">Sin: <b>{{ prodEdit.rmvCond}}</b>.</p>
+            <div *ngIf="prodEdit" class="row">
+                <h4>Modificado</h4>
+                <span class="text-large secondary-text-color"><b>{{ prodEdit.name }} </b> </span> <span class="text-large fourth-text-color"> <b> {{ prodEdit.type}}</b></span>
+                <p>Cantidad: <b>{{ prodEdit.quant}}</b></p>
+                <p *ngIf="prodEdit.inclAll === 'Si'">Ingredientes: <b class="secondary-text-color">Con todo</b></p>
+                <p *ngIf="prodEdit.inclAll === 'No'">Sin: <b class="secondary-text-color"> {{ prodEdit.rmvCond }}</b>.</p>
+                <p *ngIf="prodEdit.adds === 1">Adicionales: <b class="secondary-text-color">Con papas</b></p>
+                <div *ngIf="prodEdit.extraConds">
+                    <p *ngIf="prodEdit.extraConds.length > 0">Extra: <b *ngFor="let xtrCnd of prodEdit.extraConds" class="secondary-text-color">{{ xtrCnd }}</b></p>
+                    <p *ngIf="prodEdit.adds === 1 && prodEdit.extraConds.length > 0">Precio por extras: <b class="secondary-text-color">{{ prodEdit.extraCost }}</b></p>
+                </div>
+            </div>
         </div>
         <div *ngIf="selectedMod == modalOpts[2]" class="modal-body">
             <h4 class="text-danger">Deseas eliminar este producto?</h4>
@@ -234,19 +279,25 @@
                         <span>Nombre: <b class="secondary-text-color">{{ order.name }} </b> </span> <span> <b class="fourth-text-color"> {{ order.type }}</b></span>
                     </li>
                     <li class="list-group-item">
-                        Cantidad: <b>{{ order.quant }}</b>
+                        Cantidad: <b class="secondary-text-color">{{ order.quant }}</b>
                     </li>
-                    <li class="list-group-item">
-                        Con todo? <b>{{ order.inclAll }}</b>
+                    <li *ngIf="order.inclAll === 'Si'" class="list-group-item">
+                        Ingredientes: <b class="secondary-text-color">Con todo</b>
                     </li>
-                    <li class="list-group-item" *ngIf="order.rmvCond">
-                        Sin: <b>{{ order.rmvCond }}</b>
+                    <li *ngIf="order.inclAll === 'No'" class="list-group-item">
+                        Sin: <b class="secondary-text-color">{{ order.rmvCond }}</b>
+                    </li>
+                    <li *ngIf="order.adds" class="list-group-item">
+                        Adicional: <b class="secondary-text-color">Con papas</b>
+                    </li>
+                    <li *ngIf="order.extraConds.length > 0" class="list-group-item">
+                        Extras: <b *ngFor="let xtrCond of order.extraConds" class="secondary-text-color"> {{ xtrCond }}</b>.
                     </li>
                 </ul>
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" id="returnBtn" data-bs-toggle="modal" data-bs-target="#actionModal">Regresa</button>
+          <button type="button" class="btn btn-secondary" id="returnBtn" data-bs-toggle="modal" data-bs-target="#actionModal" (click)="undoBuild()">Regresa</button>
           <button type="button" class="btn btn-primary" (click)="submit()" data-bs-dismiss="modal">Confirma</button>
         </div>
       </div>

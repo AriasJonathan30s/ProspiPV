@@ -49,9 +49,10 @@
             <p>Nombre: <b>{{ viewOrderAccnt.cxName }}</b></p>
             <ul>
               <li *ngFor="let prod of viewOrderAccnt.products" class="paddiner">
-                <span>Producto: <b>  {{ prod.name }} </b> </span> <span> <b>  {{ prod.type }}</b></span>
-                <p>Cantidad: <b>{{ prod.quant }}</b></p>
-                <span>Precio unitario: <b>${{ prod.unitPrice }} </b> </span> <span> Precio total: <b class="secondary-text-color">${{ prod.totPrice }}</b></span>
+                <span>Producto: <b class="secondary-text-color"> {{ prod.name }} </b> </span> <span> <b class="fourth-text-color">  {{ prod.type }}</b></span>
+                <p>Cantidad: <b class="secondary-text-color">{{ prod.quant }}</b></p>
+                <span>Precio unitario: <b class="fourth-text-color">${{ prod.unitPrice }} </b> </span> <span> Extras: <b class="secondary-text-color"> {{ prod.extraCost }} </b></span>
+                <p> Precio total: <b class="secondary-text-color">${{ prod.totPrice }}</b></p>
               </li>
             </ul>
             <p>Total a pagar: <b class="secondary-text-color">${{ viewOrderAccnt.price }}</b></p>

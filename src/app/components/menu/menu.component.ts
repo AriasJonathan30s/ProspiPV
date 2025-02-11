@@ -23,7 +23,7 @@ export class MenuComponent {
   prodPrefDtlArr:any[] = [];
   delIngr:any[] = [];
   editDelIngr:any[] = [];
-  orderProd:any = { id:'', name: '', type: '', inclAll: 'Si', unitPrice: 0.00, quant: 1, totPrice: 0.00 };;
+  orderProd:any = { id:'', name: '', type: '', inclAll: 'Si', unitPrice: 0.00, quant: 1, totPrice: 0.00, extraCost: 0.00 };
   prodSel:any;
   prodIngrs:any[] = [];
   prodEdit:any = { quant: 1};
@@ -151,19 +151,25 @@ export class MenuComponent {
 
   rmvConds(){
     if (this.orderProd.inclAll === 'No') {
-      this.orderProd.rmvCond = this.delIngr;
+      this.orderProd.rmvCond = this.delIngr.slice();
     }
   }
 
+  undoBuild(){
+    this.orderProd.extraCost = 0;
+  }
+
   addAddls(){
-      this.orderProd.adds = this.frenchFries;
-      this.orderProd.extraConds = this.addAddlIngr;
+    this.orderProd.extraCost = (document.getElementById('extra-cost') as HTMLInputElement).value !== '' ? (parseInt((document.getElementById('extra-cost') as HTMLInputElement).value)).toFixed(2) : (0).toFixed(2);
+    this.orderProd.adds = this.frenchFries;
+    this.orderProd.extraCost = this.frenchFries ? (parseFloat(this.orderProd.extraCost) + 25).toFixed(2): this.orderProd.extraCost;
+    this.orderProd.extraConds = this.addAddlIngr.slice();
   }
 
   buildEdit(){
     let isingrsSame = 1;
     if (this.prodEdit.inclAll === 'No') {
-      this.prodEdit.rmvCond = this.editDelIngr;
+      this.prodEdit.rmvCond = this.editDelIngr.slice();
       let compare:any[]
       if (this.prodSel.inclAll === 'No') {
         compare = (this.prodSel.rmvCond).length > this.editDelIngr.length ? [this.prodSel.rmvCond, this.editDelIngr] : [this.editDelIngr, this.prodSel.rmvCond];  
@@ -178,7 +184,7 @@ export class MenuComponent {
         isingrsSame = 0;
       }
     } else {
-      this.prodEdit.inclAll = this.prodSel.inclAll;
+      this.prodEdit.inclAll = 'Si';
     }
     if (!this.prodEdit.quant) {
       this.prodEdit.quant = this.prodSel.quant;
@@ -187,6 +193,12 @@ export class MenuComponent {
     this.prodEdit.name = this.prodSel.name;
     this.prodEdit.type = this.prodSel.type;
     this.prodEdit.unitPrice = this.prodSel.unitPrice;
+    this.prodEdit.rmvCond = this.editDelIngr.slice();
+    this.prodEdit.extraConds = this.addAddlIngr.slice();
+    this.prodEdit.adds = this.frenchFries;
+    this.prodEdit.extraCost = (document.getElementById('edit-extra-cost') as HTMLInputElement).value ? parseFloat((document.getElementById('edit-extra-cost') as HTMLInputElement).value): 0.00;
+    this.prodEdit.extraCost = this.frenchFries ? (this.prodEdit.extraCost += 25.00).toFixed(2) : (this.prodEdit.extraCost).toFixed(2);
+    
     if (this.prodEdit.id === this.prodSel.id && this.prodEdit.name === this.prodSel.name && this.prodEdit.type === this.prodSel.type
       && this.prodEdit.unitPrice === this.prodSel.unitPrice && this.prodEdit.inclAll === this.prodSel.inclAll && isingrsSame
       && this.prodEdit.quant === this.prodSel.quant) {
@@ -333,6 +345,7 @@ export class MenuComponent {
   }
 
   returnBtn(option:number){
+    console.log(this.orderProds)
     switch (option) {
       case 0:
         document.getElementById('returnBtn')?.removeAttribute('data-bs-toggle');
@@ -374,6 +387,14 @@ export class MenuComponent {
     }
   }
 
+  rebuildSelected(){
+    this.menu.forEach(prod=>{
+      if (this.prodSel.id === prod.id && this.prodSel.name === prod.name && this.prodSel.type === prod.type) {
+        this.prodIngrs = prod.detailArr;
+      }
+    })
+  }
+
   selectModal(modalSel:number, val?:any, index?:any){
     this.modalSel = modalSel;
     this.selectedMod = this.modalOpts[modalSel]
@@ -390,11 +411,7 @@ export class MenuComponent {
       case 1:
         this.prodSel = val;
         this.prodSel.index = index;
-        this.menu.forEach(prod=>{
-          if (this.prodSel.id === prod.id && this.prodSel.name === prod.name && this.prodSel.type === prod.type) {
-            this.prodIngrs = prod.detailArr;
-          }
-        })
+        this.rebuildSelected();
         this.returnBtn(1);
         break;
       case 2:
@@ -469,6 +486,18 @@ export class MenuComponent {
     this.orderProd = { id:'', name: '', type: '', inclAll: 'Si', unitPrice: 0.00, quant: 1, totPrice: 0.00 };
     this.prodPref = '';
     this.delIngr = [];
+    if (this.frenchFries === 1) {
+      document.getElementById('flexRadioDefault3')?.click();
+    }
+    (document.getElementById('extra-cost') as HTMLInputElement).value = '';
+    this.showAddlConds.forEach(grp=>{
+      let grpArr:any[] = grp;
+      grpArr.forEach(lmnt=>{
+        if (this.addAddlIngr.includes(lmnt)) {
+          document.getElementById(lmnt)?.click();
+        }
+      })
+    })
   }
 
   getParams(){
