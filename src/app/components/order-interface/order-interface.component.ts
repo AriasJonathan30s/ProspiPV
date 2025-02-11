@@ -194,6 +194,7 @@ export class OrderInterfaceComponent {
     .subscribe(
       resp=>{
         this.viewOrderAccnt = resp.body.message;
+        console.log(resp.body.message)
       },
       e=>{
         console.error(e)
